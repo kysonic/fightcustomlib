@@ -35,19 +35,40 @@ var Stage = function (height,width,fillColor) {
             path = new Path.Rectangle(this.startPoint,new Size(this.height,this.width));
             this.init();
         }
+        
+    var scale = function() {
+        this.prop = 'property';
+    }
+
+    this.scale = scale;
+                
 }
-fExtend(Stage,Path.Rectangle)
+
+var Scale = function() {
+    this.prop = 'scaleProp';
+}
+
+fExtend(Stage,Path.Rectangle);
+
+
+
 // Return section
    return {
        Stage: Stage,
+       Scale: Scale
    }
 }();
+
+
+
 
 var canvas = document.getElementById('paperGraph');
 
 
 var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
 stage.init();
+console.log(stage.scale);
+
 
 // Stage shake
 
@@ -61,7 +82,7 @@ function onFrame(event) {
     }
     stage.fillColor = new Color((event.count-100*k)/100,1-((event.count-100*k)/100), (event.count-100*k)/100);
     stage.rotate++;
-   stage.draw();
+    stage.draw();
 }
 */
 
