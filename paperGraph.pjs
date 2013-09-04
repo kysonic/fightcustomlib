@@ -1,0 +1,26 @@
+App = function()
+{
+
+var Stage = function () {
+// Define Stage property
+   this.width = 200;
+   this.height = 300;
+   this.fillColor = '#FFF'; 
+// Use the paperJS standart Point object
+   this.startPoint = new Point(0,0);
+
+// Stage initialaize
+   this.init = function() {
+        
+   }
+}
+// Return section
+   return {
+       Stage: Stage,
+   }
+}();
+
+var stage = new App.Stage();
+console.log(stage);
+
+
