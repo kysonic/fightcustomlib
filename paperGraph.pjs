@@ -48,8 +48,10 @@ var canvas = document.getElementById('paperGraph');
 
 var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
 stage.init();
-stage.doRotate(50);
-stage.rotate = 0;
+
+// Stage shake
+
+/* 
 var k=0;
 function onFrame(event) {
     // Made a not ending cicle
@@ -58,9 +60,11 @@ function onFrame(event) {
         k++;
     }
     stage.fillColor = new Color((event.count-100*k)/100,1-((event.count-100*k)/100), (event.count-100*k)/100);
-    
+    stage.rotate++;
    stage.draw();
 }
+*/
+
 
 
 
