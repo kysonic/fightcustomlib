@@ -2,7 +2,7 @@
 
 App = function()
 {
-
+// ### Stage Object ###
 var Stage = function (height,width,fillColor) {
 // Define Stage property
 
@@ -11,6 +11,7 @@ var Stage = function (height,width,fillColor) {
    this.fillColor = fillColor;
    this.strokeColor = '#000';
    this.stokeWidth = 2;
+   this.rotateCenter = view.center;
 
 // Use the paperJS standart Point object
 
@@ -25,47 +26,77 @@ var Stage = function (height,width,fillColor) {
    this.init = function() {
         path.strokeColor = this.strokeColor;
         path.fillColor = this.fillColor;
-        path.rotate(this.rotate);
+        path.rotate(this.rotate,this.rotateCenter);
    }
 
     this.doRotate = function(rotate) {
         this.rotate = rotate;
-        path.rotate(this.rotate);  
+        path.rotate(this.rotate,this.scaleX.scaleCenter);  
+        this.scaleX.doRotate(this.rotate);
+        this.scaleY.doRotate(this.rotate);
     }
     this.draw = function() {
             path.remove();
-            path = new Path.Rectangle(this.startPoint,new Size(this.height,this.width));
+            path = new Path.Rectangle(this.startPoint,new Size(this.width,this.height));
             this.init();
-        }
+            this.scaleX.draw();
+            this.scaleY.draw();
+     }
      
 
     this.scaleX = new App.Scale(this,new Point(20,0));
-    this.scaleY = new App.Scale(this,new Point(0,20));           
-    console.log(this.scaleY);
-}
+    this.scaleX.init();
+    this.scaleY = new App.Scale(this,new Point(0,20)); 
+    this.scaleY.init();
 
+}
+// ### Scale Object ###
+
+// ### Scale Object ###
 var Scale = function(stage,offset) {
     // Define scale property
     var superclass = stage;
     this.offset = offset;
+    this.rotate = 0;
+    this.strokeColor = '#000';
+    
     // This function define scale orientation depending on entering params, exactly from offset
     this.defineScaleOrientation = function() {
         if(Fight.isEmpty(this.offset.x)) return 'y';
         if(Fight.isEmpty(this.offset.y)) return 'x';
     }
 
+    
+
     var scaleOrientation = this.defineScaleOrientation();
     this.startPoint = (scaleOrientation == 'x') ? new Point(offset.x,offset.x) : new Point(offset.x+offset.y,superclass.height-offset.y);
     this.endPoint = (scaleOrientation == 'x') ? new Point(offset.x,superclass.height-offset.x) : new Point(superclass.width-offset.y,superclass.height-offset.y);
+    this.scaleCenter = (scaleOrientation == 'x') ? this.endPoint : this.startPoint;
+
     
     
     var path = new Path();
-    path.strokeColor = 'black';
-    path.add(new Point(this.startPoint));
-    path.add(new Point(this.endPoint));
+    this.init =  function() {
+        path.strokeColor = this.strokeColor;
+        path.add(new Point(this.startPoint));
+        path.add(new Point(this.endPoint));
+        path.rotate(this.rotate,superclass.rotateCenter);
+    }
+
+
+    this.doRotate = function(rotate) {
+        this.rotate = rotate;
+        path.rotate(this.rotate,this.scaleCenter); 
+    }
+
+    this.draw = function() {
+        path.remove();
+        path = new Path();
+        this.init();
+    }
 
 }
-
+// ### Scale Object ###
 Fight.extend(Stage,Path.Rectangle);
 
 
@@ -85,11 +116,12 @@ var canvas = document.getElementById('paperGraph');
 var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
 stage.init();
 
+    
 
 
 // Stage shake
 
-/* 
+
 var k=0;
 function onFrame(event) {
     // Made a not ending cicle
@@ -99,9 +131,13 @@ function onFrame(event) {
     }
     stage.fillColor = new Color((event.count-100*k)/100,1-((event.count-100*k)/100), (event.count-100*k)/100);
     stage.rotate++;
-    stage.draw();
+stage.scaleX.rotate++;
+stage.scaleY.rotate++;
+stage.draw();
+    
 }
-*/
+
+
 
 
 
