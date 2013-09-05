@@ -90,7 +90,7 @@ var Triangle = function(superclass,center,delta,direction,text,rotate,viewPoints
         path.add(point1);
         path.add(point2);
         path.add(point3);
-        path.rotate(this.rotate,this.rotateCenter);
+        path.rotate(superclass.rotate,this.rotateCenter);
 
       
        // Draw Text
@@ -98,7 +98,7 @@ var Triangle = function(superclass,center,delta,direction,text,rotate,viewPoints
             textPoint.remove();
             textPoint = new PointText(new Point(center.x+delta*this.xTextOffset,center.y-delta*this.yTextOffset));
             textPoint.content = this.text;
-            textPoint.rotate(this.rotate,this.rotateCenter);
+            textPoint.rotate(superclass.rotate,this.rotateCenter);
             textPoint.style = {
                 fontSize: 15,
                 fillColor: 'black',
@@ -147,7 +147,7 @@ var Stroke = function(scale,point,size,orientation) {
     this.strokeColor = '#000';
     this.point = point;
     this.size = size;
-    this.rotate = scale.rotate;
+    this.rotate = 0;
     this.orient = orientation;
     
     var path = new Path();
@@ -161,7 +161,7 @@ var Stroke = function(scale,point,size,orientation) {
         path.add(point.x,point.y+size);    
       }
       path.strokeColor = this.strokeColor;
-      path.rotate(this.rotate,scale.rotateCenter);
+      path.rotate(scale.rotate,scale.rotateCenter);
     }
 
     this.draw = function() {
@@ -181,6 +181,7 @@ var Scale = function(stage,offset) {
     var superclass = stage;
     this.offset = offset;
     this.rotate = 0;
+    this.part = 3;
     this.strokeColor = '#000';
     this.rotateCenter = stage.rotateCenter;
     
@@ -204,6 +205,7 @@ var Scale = function(stage,offset) {
         path.strokeColor = this.strokeColor;
         path.add(new Point(this.startPoint));
         path.add(new Point(this.endPoint));
+        this.rotate = superclass.rotate;
         path.rotate(this.rotate,superclass.rotateCenter);
     }
 
@@ -218,11 +220,14 @@ var Scale = function(stage,offset) {
         path = new Path();
         this.init();
         this.triXY.draw();
-       // this.tmpStroke.draw();
+        if (scaleOrientation == 'x') {
+            for(var i=1;i<this.part;i++) {
+                this.tmpStroke['stroke'+i].draw();
+            }
+        }
         //this.tmpStroke.draw();
         
     }
-
     // Draw triangle's
     this.triXY = (scaleOrientation == 'x') ? new App.Triangle(superclass,this.startPoint,7,'top','x',0,false) : new App.Triangle(superclass,this.endPoint,7,'right','y',0,false);
     this.triXY.init();
@@ -230,9 +235,12 @@ var Scale = function(stage,offset) {
     // Draw All Stroke on X Scale
     if(scaleOrientation == 'x') {
        var scaleLength = this.endPoint.y - this.startPoint.y;
-       var delta = Math.round(scaleLength/10);
-      this.tmpStroke= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+delta*31),8,'vertical');
-      this.tmpStroke.init();
+       var delta = Math.round(scaleLength/this.part);
+       this.tmpStroke = new Array();
+       for(var i=1;i<this.part;i++) {
+            this.tmpStroke['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+delta*i),8,'vertical');
+            this.tmpStroke['stroke'+i].init();
+        }
 
     }
 }
@@ -257,10 +265,9 @@ var canvas = document.getElementById('paperGraph');
 
 var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
 stage.init();
-
+stage.draw();
 
 // Stage shake
-
 
 var k=0;
 function onFrame(event) {
@@ -271,12 +278,9 @@ function onFrame(event) {
     }
     stage.fillColor = new Color((event.count-100*k)/100,1-((event.count-100*k)/100), (event.count-100*k)/100);
     stage.rotate++;
-stage.scaleX.rotate++;
-stage.scaleY.rotate++;
-stage.scaleX.triXY.rotate++;
-stage.scaleY.triXY.rotate++;
-stage.draw();
+    stage.draw();
 }
+
 
 
 
