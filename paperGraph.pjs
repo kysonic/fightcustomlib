@@ -1,11 +1,13 @@
+//Define Application NameSpace
+
 App = function()
 {
 
 var Stage = function (height,width,fillColor) {
 // Define Stage property
 
-   this.width = height;
-   this.height = width;
+   this.width = width;
+   this.height = height;
    this.fillColor = fillColor;
    this.strokeColor = '#000';
    this.stokeWidth = 2;
@@ -17,7 +19,7 @@ var Stage = function (height,width,fillColor) {
 
 // Defain Global Path - View of the Graph Stage
 
-   var path = new Path.Rectangle(this.startPoint,new Size(this.height,this.width));
+   var path = new Path.Rectangle(this.startPoint,new Size(this.width,this.height));
 
 // Stage initialaize
    this.init = function() {
@@ -40,16 +42,31 @@ var Stage = function (height,width,fillColor) {
         this.prop = 'property';
     }
 
-    this.scale = scale;
+    this.scale = new App.Scale(this,new Point(20,0));
                 
 }
 
-var Scale = function() {
-    this.prop = 'scaleProp';
+var Scale = function(stage,offset) {
+    // Define scale property
+    var superclass = stage;
+    this.startPoint = new Point(20,20);
+    this.endPoint = new Point(20,superclass.height-20);
+    this.offset = offset;
+
+    this.isEmptyOffset = function() {
+        
+       
+
+        console.log(Fight.isEmpty(this.offset.x));
+    }
+    
+    var path = new Path();
+    path.strokeColor = 'black';
+    path.add(new Point(this.startPoint));
+    path.add(new Point(this.endPoint));
 }
 
-fExtend(Stage,Path.Rectangle);
-
+Fight.extend(Stage,Path.Rectangle);
 
 
 // Return section
@@ -66,8 +83,8 @@ var canvas = document.getElementById('paperGraph');
 
 
 var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
-stage.init();s
-console.log(stage.scale);
+stage.init();
+stage.scale.isEmptyOffset();
 
 
 // Stage shake
