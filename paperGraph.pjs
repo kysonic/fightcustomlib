@@ -37,33 +37,33 @@ var Stage = function (height,width,fillColor) {
             path = new Path.Rectangle(this.startPoint,new Size(this.height,this.width));
             this.init();
         }
-        
-    var scale = function() {
-        this.prop = 'property';
-    }
+     
 
-    this.scale = new App.Scale(this,new Point(20,0));
-                
+    this.scaleX = new App.Scale(this,new Point(20,0));
+    this.scaleY = new App.Scale(this,new Point(0,20));           
+    console.log(this.scaleY);
 }
 
 var Scale = function(stage,offset) {
     // Define scale property
     var superclass = stage;
-    this.startPoint = new Point(20,20);
-    this.endPoint = new Point(20,superclass.height-20);
     this.offset = offset;
-
-    this.isEmptyOffset = function() {
-        
-       
-
-        console.log(Fight.isEmpty(this.offset.x));
+    // This function define scale orientation depending on entering params, exactly from offset
+    this.defineScaleOrientation = function() {
+        if(Fight.isEmpty(this.offset.x)) return 'y';
+        if(Fight.isEmpty(this.offset.y)) return 'x';
     }
+
+    var scaleOrientation = this.defineScaleOrientation();
+    this.startPoint = (scaleOrientation == 'x') ? new Point(offset.x,offset.x) : new Point(offset.x+offset.y,superclass.height-offset.y);
+    this.endPoint = (scaleOrientation == 'x') ? new Point(offset.x,superclass.height-offset.x) : new Point(superclass.width-offset.y,superclass.height-offset.y);
+    
     
     var path = new Path();
     path.strokeColor = 'black';
     path.add(new Point(this.startPoint));
     path.add(new Point(this.endPoint));
+
 }
 
 Fight.extend(Stage,Path.Rectangle);
@@ -84,7 +84,7 @@ var canvas = document.getElementById('paperGraph');
 
 var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
 stage.init();
-stage.scale.isEmptyOffset();
+
 
 
 // Stage shake
