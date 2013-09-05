@@ -66,7 +66,7 @@ var canvas = document.getElementById('paperGraph');
 
 
 var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
-stage.init();
+stage.init();s
 console.log(stage.scale);
 
 
