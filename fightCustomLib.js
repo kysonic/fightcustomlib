@@ -56,10 +56,40 @@ function isArray(mixed_var) {
         return (typeof(mixed_var) == 'object' && mixed_var instanceof Array);
 }
 
+/*
+ * @function Include
+ * @description This function is analog php include function
+ */
+
+function include(filename) {	
+         // The include() statement includes and evaluates the specified file.
+
+	var js = document.createElement('script');
+	js.setAttribute('type', 'text/javascript');
+	js.setAttribute('src', filename);
+	js.setAttribute('defer', 'defer');
+	document.getElementsByTagName('HEAD')[0].appendChild(js);
+
+	// save include state for reference by include_once
+	var cur_file = {};
+	cur_file[window.location.href] = 1;
+
+	if (!window.php_js) window.php_js = {};
+	if (!window.php_js.includes) window.php_js.includes = cur_file;
+	if (!window.php_js.includes[filename]) {
+		window.php_js.includes[filename] = 1;
+	} else {
+		window.php_js.includes[filename]++;
+	}
+
+	return window.php_js.includes[filename];
+}
+
 return {
     extend:extend,
     isEmpty: isEmpty,
-    isArray: isArray
+    isArray: isArray,
+    include: include
 }
 
 }();
