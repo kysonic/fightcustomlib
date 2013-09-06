@@ -107,9 +107,9 @@ function each(data, callback){
 function addEvent(name,callback) {
     switch(name) {
         case 'wheel':
-            addHandler(window, 'DOMMouseScroll', wheel,callback);
-            addHandler(window, 'mousewheel', wheel);
-            addHandler(document, 'mousewheel', wheel); 
+            //addHandler(window, 'DOMMouseScroll', wheel(1),callbacks);
+            addHandler(window, 'mousewheel', callback);
+            //addHandler(document, 'mousewheel', wheel,callbacks); 
                 break;
         
     }
@@ -121,10 +121,9 @@ function addEvent(name,callback) {
  * @description add the Custom Event Handler
  */
 
-function addHandler(object, event, handler, useCapture) {
-      console.log(useCapture); 
+function addHandler(object, event, handler) {
     if (object.addEventListener) {
-        object.addEventListener(event, handler, useCapture ? useCapture : false);
+        object.addEventListener(event, handler, false);
     } else if (object.attachEvent) {
         object.attachEvent('on' + event, handler);
     } else alert("Add handler is not supported");
@@ -135,8 +134,8 @@ function addHandler(object, event, handler, useCapture) {
  * @description the Mouse Wheel Handler
  */
 
-function wheel(event,callback) {
-    var delta; // Scroll direct
+function getWheelDelta(event) {
+        var delta; // Scroll direct
     // -1 - down
     // 1  - up
     event = event || window.event;
@@ -151,8 +150,8 @@ function wheel(event,callback) {
     }
     // Denied the default browser action
     if (event.preventDefault)  event.preventDefault();
-    console.log(callback);
-    console.log(delta);
+
+    return delta;
 }
 
 return {
@@ -161,7 +160,8 @@ return {
     isArray: isArray,
     include: include,
     each: each,
-    addEvent: addEvent
+    addEvent: addEvent,
+    getWheelDelta: getWheelDelta
 }
 
 }();

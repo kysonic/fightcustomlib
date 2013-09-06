@@ -12,9 +12,9 @@ var Stage = function (height,width,fillColor,partX,partY) {
    this.strokeColor = '#000';
    this.stokeWidth = 2;
    this.scaleOffset = 20;
-   this.rotateCenter = new Point(20,380);
    this.partX = partX;
    this.partY = partY;
+   this.rotateCenter = new Point(20,380);
    this.data = new Object;
 
 // Use the paperJS standart Point object
@@ -165,11 +165,11 @@ var Stroke = function(scale,point,size,orientation) {
 
     this.init = function() {
       if(this.orient == 'vertical'){  
-        path.add(point.x-size,point.y);
-        path.add(point.x+size,point.y);
+        path.add(this.point.x-this.size,this.point.y);
+        path.add(this.point.x+this.size,this.point.y);
       }else {
-        path.add(point.x,point.y-size);
-        path.add(point.x,point.y+size);    
+        path.add(this.point.x,this.point.y-this.size);
+        path.add(this.point.x,this.point.y+this.size);    
       }
       path.strokeColor = this.strokeColor;
       path.rotate(scale.rotate,scale.rotateCenter);
@@ -217,8 +217,11 @@ var Scale = function(stage,offset) {
         path.strokeColor = this.strokeColor;
         path.add(new Point(this.startPoint));
         path.add(new Point(this.endPoint));
+        this.partX = superclass.partX;
+        this.partY = superclass.partY;
         this.rotate = superclass.rotate;
         path.rotate(this.rotate,superclass.rotateCenter);
+        
     }
 
 
@@ -233,12 +236,22 @@ var Scale = function(stage,offset) {
         this.init();
         this.triXY.draw();
         if (scaleOrientation == 'x') {
+            this.scaleLengthX = this.endPoint.y - this.startPoint.y;
+            this.deltaX = Math.round(this.scaleLengthX/this.partX);
             for(var i=1;i<this.partX;i++) {
-                this.tmpStrokeX['stroke'+i].draw();
+                if(this.tmpStrokeX['stroke'+i]!=undefined) {
+                    this.tmpStrokeX['stroke'+i].point = new Point(this.startPoint.x,this.startPoint.y+this.deltaX*i);
+                    this.tmpStrokeX['stroke'+i].draw();
+                }
             }
         }else {
+            this.scaleLengthY = this.endPoint.x - this.startPoint.x;
+            this.deltaY = Math.round(this.scaleLengthY/this.partY);
             for(var i=1;i<this.partY;i++) {
-                this.tmpStrokeY['stroke'+i].draw();
+               if(this.tmpStrokeY['stroke'+i]!=undefined) {
+                    this.tmpStrokeY['stroke'+i].point = new Point(this.startPoint.x+this.deltaY*i,this.startPoint.y);
+                    this.tmpStrokeY['stroke'+i].draw();
+                }
             }
         }
         //this.tmpStrokeX.draw();
@@ -248,14 +261,14 @@ var Scale = function(stage,offset) {
     this.triXY = (scaleOrientation == 'x') ? new App.Triangle(superclass,this.startPoint,7,'top','x',0,false) : new App.Triangle(superclass,this.endPoint,7,'right','y',0,false);
     this.triXY.init();
 
-    // Draw All Stroke on X Scale
-    if(scaleOrientation == 'x') {
-       this.scaleLengthX = this.endPoint.y - this.startPoint.y;
-       this.deltaX = Math.round(this.scaleLengthX/this.partX);
-       this.tmpStrokeX = new Array();
-       for(var i=1;i<this.partX;i++) {
-            this.tmpStrokeX['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+this.deltaX*i),8,'vertical');
-            this.tmpStrokeX['stroke'+i].init();
+                 // Draw All Stroke on X Scale
+        if(scaleOrientation == 'x') {
+            this.scaleLengthX = this.endPoint.y - this.startPoint.y;
+            this.deltaX = Math.round(this.scaleLengthX/this.partX);
+            this.tmpStrokeX = new Array();
+            for(var i=1;i<this.partX;i++) {
+                this.tmpStrokeX['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+this.deltaX*i),8,'vertical');
+                this.tmpStrokeX['stroke'+i].init();
         }
 
     } else {
@@ -267,6 +280,8 @@ var Scale = function(stage,offset) {
             this.tmpStrokeY['stroke'+i].init();
         }
     }
+
+   
 
     
 }
@@ -317,7 +332,7 @@ var Graph = function(stage,data) {
         }
         path.strokeColor = this.storkeColor;
         path.strokeWidth = 5;
-        console.log(path.strokeColor._alpha=0.2);
+        path.strokeColor._alpha=0.2;
         path.rotate(stage.rotate,stage.rotateCenter);
     }
     
@@ -357,14 +372,26 @@ $.getJSON('points.json',function(response) {
     loading.remove();
 });
 
+// Add On Mouse Wheel Event - scale us graph!
 
-Fight.addEvent('wheel',function(event){console.log(event)});
+Fight.addEvent('wheel',function(event){
+     var delta = Fight.getWheelDelta(event);
+     if(delta=='1') {
+        stage.partX++;
+        stage.partY++;
+     }else {
+        stage.partX--;
+        stage.partY--;
+     }
+     
+});
 
 
 // Stage shake
-/*
+
 var k=0;
 function onFrame(event) {
+/*
     // Made a not ending cicle
 
     if(event.count>(100*(k+1))) {
@@ -372,9 +399,10 @@ function onFrame(event) {
     }
     stage.fillColor = new Color((event.count-100*k)/100,1-((event.count-100*k)/100), (event.count-100*k)/100);
     stage.rotate++;
+*/
     stage.draw();
 }
-*/
+
 
 
 
