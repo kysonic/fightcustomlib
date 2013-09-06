@@ -12,7 +12,7 @@ var Stage = function (height,width,fillColor) {
    this.strokeColor = '#000';
    this.stokeWidth = 2;
    this.scaleOffset = 20;
-   this.rotateCenter = new Point(20,330);
+   this.rotateCenter = view.center;
 
 // Use the paperJS standart Point object
 
@@ -181,7 +181,8 @@ var Scale = function(stage,offset) {
     var superclass = stage;
     this.offset = offset;
     this.rotate = 0;
-    this.part = 3;
+    this.partX = 3;
+    this.partY = 10;
     this.strokeColor = '#000';
     this.rotateCenter = stage.rotateCenter;
     
@@ -221,11 +222,15 @@ var Scale = function(stage,offset) {
         this.init();
         this.triXY.draw();
         if (scaleOrientation == 'x') {
-            for(var i=1;i<this.part;i++) {
-                this.tmpStroke['stroke'+i].draw();
+            for(var i=1;i<this.partX;i++) {
+                this.tmpStrokeX['stroke'+i].draw();
+            }
+        }else {
+            for(var i=1;i<this.partY;i++) {
+                this.tmpStrokeY['stroke'+i].draw();
             }
         }
-        //this.tmpStroke.draw();
+        //this.tmpStrokeX.draw();
         
     }
     // Draw triangle's
@@ -235,14 +240,24 @@ var Scale = function(stage,offset) {
     // Draw All Stroke on X Scale
     if(scaleOrientation == 'x') {
        var scaleLength = this.endPoint.y - this.startPoint.y;
-       var delta = Math.round(scaleLength/this.part);
-       this.tmpStroke = new Array();
-       for(var i=1;i<this.part;i++) {
-            this.tmpStroke['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+delta*i),8,'vertical');
-            this.tmpStroke['stroke'+i].init();
+       var delta = Math.round(scaleLength/this.partX);
+       this.tmpStrokeX = new Array();
+       for(var i=1;i<this.partX;i++) {
+            this.tmpStrokeX['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+delta*i),8,'vertical');
+            this.tmpStrokeX['stroke'+i].init();
         }
 
+    } else {
+       var scaleLength = this.endPoint.x - this.startPoint.x;
+       var delta = Math.round(scaleLength/this.partY);
+       this.tmpStrokeY = new Array();
+       for(var i=1;i<this.partY;i++) {
+            this.tmpStrokeY['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x+delta*i,this.startPoint.y),8,'gorizontal');
+            this.tmpStrokeY['stroke'+i].init();
+        }
     }
+
+    
 }
 // ### Scale Object ###
 
@@ -280,6 +295,7 @@ function onFrame(event) {
     stage.rotate++;
     stage.draw();
 }
+
 
 
 
