@@ -122,7 +122,7 @@ function addEvent(name,callback) {
  */
 
 function addHandler(object, event, handler, useCapture) {
-      console.log(useCapture);
+      console.log(useCapture); 
     if (object.addEventListener) {
         object.addEventListener(event, handler, useCapture ? useCapture : false);
     } else if (object.attachEvent) {
