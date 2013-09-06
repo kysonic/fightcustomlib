@@ -10,6 +10,8 @@ var Stage = function (height,width,fillColor,partX,partY) {
    this.height = height;
    this.fillColor = fillColor;
    this.strokeColor = '#000';
+   this.showPeaks = false;
+   this.sinMorf = true;
    this.stokeWidth = 2;
    this.scaleOffset = 20;
    this.partX = partX;
@@ -40,13 +42,13 @@ var Stage = function (height,width,fillColor,partX,partY) {
         this.scaleX.doRotate(this.rotate);
         this.scaleY.doRotate(this.rotate);
     }
-    this.draw = function() {
+    this.draw = function(event) {
             path.remove();
             path = new Path.Rectangle(this.startPoint,new Size(this.width,this.height));
             this.init();
             this.scaleX.draw();
             this.scaleY.draw();
-            this.graph.draw();
+            this.graph.draw(event);
      }
      
      
@@ -307,33 +309,40 @@ var Graph = function(stage,data) {
 
     var points = new Array();
    
-    this.init = function() {
-            this.nullPoint = stage.scaleX.endPoint;
+    this.init = function(event) {
+    this.nullPoint = stage.scaleX.endPoint;
     this.deltaX = stage.scaleX.deltaX;
     this.deltaY = stage.scaleY.deltaY;
+
         for (var i=0;i<this.points.length;i++) {
             points[i] = new Path.Circle(new Point(this.nullPoint.x+this.deltaY*this.points[i].x,this.nullPoint.y-this.deltaX*this.points[i].y),this.pointRad);
             points[i].strokeColor = this.pointStrokeColor;
             points[i].fillColor = this.pointFillColor;
             points[i].rotate(stage.rotate,stage.rotateCenter);
         }
-        this.drawLine();
+        this.drawLine(event);
     }
 
-    this.draw = function() {
+    this.draw = function(event) {
         for (var i=0;i<this.points.length;i++) {
             points[i].remove();
         }
-        this.init();
+        this.init(event);
     }
     
 
-    this.drawLine = function() {
+    this.drawLine = function(event) {
          path.remove();
          path = new Path();
          path.selected = true;
          for (var i=0;i<this.points.length;i++) {
-            path.add(new Point(this.nullPoint.x+this.deltaY*this.points[i].x,this.nullPoint.y-this.deltaX*this.points[i].y)); 
+                path.add(new Point(this.nullPoint.x+this.deltaY*this.points[i].x,this.nullPoint.y-this.deltaX*this.points[i].y)); 
+            if(stage.sinMorf) {
+                var segment = path.segments[i];  
+                var sinus = Math.sin(1 * event.time + i);
+                segment.point.y = sinus * 60 + this.nullPoint.y;
+            }   
+
         }
         path.strokeColor = this.storkeColor;
         path.strokeWidth = 5;
@@ -397,16 +406,17 @@ Fight.addEvent('wheel',function(event){
 
 var k=0;
 function onFrame(event) {
-/*
-    // Made a not ending cicle
 
+    // Made a not ending cicle
+/*
     if(event.count>(100*(k+1))) {
         k++;
     }
     stage.fillColor = new Color((event.count-100*k)/100,1-((event.count-100*k)/100), (event.count-100*k)/100);
     stage.rotate++;
 */
-    stage.draw();
+
+    stage.draw(event);
 }
 
 
