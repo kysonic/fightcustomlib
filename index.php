@@ -6,5 +6,5 @@
     <script type="text/paperscript" canvas="paperGraph" src="paperGraph.pjs" id="script"></script>
 </head>
 <body>
-    <canvas id="paperGraph" class="canvas" color="#fff" width="800" height="350" ></canvas>
+    <canvas id="paperGraph" class="canvas" color="#fff" width="800" height="400" ></canvas>
 </body>

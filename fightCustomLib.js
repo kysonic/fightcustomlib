@@ -85,11 +85,26 @@ function include(filename) {
 	return window.php_js.includes[filename];
 }
 
+/*
+ * @function Each
+ * @description This is analog php-function foreach
+ */
+
+function each(data, callback){ 
+  for(var key in data){
+    if(data.hasOwnProperty(key)){
+      callback(key, data[key]);
+    }
+  }
+}
+
+
 return {
     extend:extend,
     isEmpty: isEmpty,
     isArray: isArray,
-    include: include
+    include: include,
+    each: each
 }
 
 }();

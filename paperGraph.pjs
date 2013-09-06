@@ -3,7 +3,7 @@
 App = function()
 {
 // ### Stage Object ###
-var Stage = function (height,width,fillColor) {
+var Stage = function (height,width,fillColor,partX,partY) {
 // Define Stage property
 
    this.width = width;
@@ -13,6 +13,9 @@ var Stage = function (height,width,fillColor) {
    this.stokeWidth = 2;
    this.scaleOffset = 20;
    this.rotateCenter = view.center;
+   this.partX = partX;
+   this.partY = partY;
+   this.data = new Object;
 
 // Use the paperJS standart Point object
 
@@ -43,6 +46,7 @@ var Stage = function (height,width,fillColor) {
             this.init();
             this.scaleX.draw();
             this.scaleY.draw();
+            this.graph.draw();
      }
      
      
@@ -50,6 +54,13 @@ var Stage = function (height,width,fillColor) {
     this.scaleX.init();
     this.scaleY = new App.Scale(this,new Point(0,this.scaleOffset)); 
     this.scaleY.init();
+
+    // Initialize Graph
+    this.initGraph = function(data) {
+        this.data = data;
+        this.graph = new App.Graph(this,data);
+        this.graph.init();
+    }
 
 }
 // ### Stage Object ###
@@ -181,8 +192,8 @@ var Scale = function(stage,offset) {
     var superclass = stage;
     this.offset = offset;
     this.rotate = 0;
-    this.partX = 3;
-    this.partY = 10;
+    this.partX = stage.partX;
+    this.partY = stage.partY;
     this.strokeColor = '#000';
     this.rotateCenter = stage.rotateCenter;
     
@@ -239,20 +250,20 @@ var Scale = function(stage,offset) {
 
     // Draw All Stroke on X Scale
     if(scaleOrientation == 'x') {
-       var scaleLength = this.endPoint.y - this.startPoint.y;
-       var delta = Math.round(scaleLength/this.partX);
+       this.scaleLengthX = this.endPoint.y - this.startPoint.y;
+       this.deltaX = Math.round(this.scaleLengthX/this.partX);
        this.tmpStrokeX = new Array();
        for(var i=1;i<this.partX;i++) {
-            this.tmpStrokeX['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+delta*i),8,'vertical');
+            this.tmpStrokeX['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+this.deltaX*i),8,'vertical');
             this.tmpStrokeX['stroke'+i].init();
         }
 
     } else {
-       var scaleLength = this.endPoint.x - this.startPoint.x;
-       var delta = Math.round(scaleLength/this.partY);
+       this.scaleLengthY = this.endPoint.x - this.startPoint.x;
+       this.deltaY = Math.round(this.scaleLengthY/this.partY);
        this.tmpStrokeY = new Array();
        for(var i=1;i<this.partY;i++) {
-            this.tmpStrokeY['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x+delta*i,this.startPoint.y),8,'gorizontal');
+            this.tmpStrokeY['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x+this.deltaY*i,this.startPoint.y),8,'gorizontal');
             this.tmpStrokeY['stroke'+i].init();
         }
     }
@@ -261,7 +272,41 @@ var Scale = function(stage,offset) {
 }
 // ### Scale Object ###
 
+// ### Graph Object ###
 
+var Graph = function(stage,data) {
+    this.points = data.points;
+    this.rotate = stage.rotate;
+    this.pointRad = 3;
+    this.pointStrokeColor = 'red';
+    this.pointFillColor = 'red';
+    
+    this.nullPoint = stage.scaleX.endPoint;
+    this.deltaX = stage.scaleX.deltaX;
+    this.deltaY = stage.scaleY.deltaY;
+
+    var points = new Array();
+   
+    this.init = function() {
+        for (var i=0;i<this.points.length;i++) {
+            points[i] = new Path.Circle(new Point(this.nullPoint.x+this.deltaY*this.points[i].x,this.nullPoint.y-this.deltaX*this.points[i].y),this.pointRad);
+            points[i].strokeColor = this.pointStrokeColor;
+            points[i].fillColor = this.pointFillColor;
+            points[i].rotate(stage.rotate,stage.rotateCenter);
+        }
+
+    }
+
+    this.draw = function() {
+        for (var i=0;i<this.points.length;i++) {
+            points[i].remove();
+        }
+        this.init();
+    }
+    
+}
+
+// ### Graph Object ###
 
 Fight.extend(Stage,Path.Rectangle);
 
@@ -271,19 +316,32 @@ Fight.extend(Stage,Path.Rectangle);
        Stage: Stage,
        Scale: Scale,
        Triangle: Triangle,
-       Stroke: Stroke
+       Stroke: Stroke,
+       Graph: Graph
    }
 }();
 
 // Get canvas id
 var canvas = document.getElementById('paperGraph');
 
-var stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'));
-stage.init();
-stage.draw();
+
+var stage;
+var loading = new PointText(view.center);
+    loading.content = 'Loading...';
+    loading.style = {
+                fontSize: 40,
+                fillColor: 'red',
+                justification: 'center'
+            };
+$.getJSON('points.json',function(response) {
+    stage = new App.Stage(canvas.height,canvas.width,canvas.getAttribute('color'),response.scaleX,response.scaleY);
+    stage.init();
+    stage.initGraph(response);
+    loading.remove();
+});
 
 // Stage shake
-
+/*
 var k=0;
 function onFrame(event) {
     // Made a not ending cicle
@@ -295,6 +353,11 @@ function onFrame(event) {
     stage.rotate++;
     stage.draw();
 }
+*/
+
+
+
+
 
 
 
