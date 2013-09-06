@@ -14,7 +14,7 @@ var Stage = function (height,width,fillColor,partX,partY) {
    this.scaleOffset = 20;
    this.partX = partX;
    this.partY = partY;
-   this.rotateCenter = new Point(20,380);
+   this.rotateCenter = view.center;
    this.data = new Object;
 
 // Use the paperJS standart Point object
@@ -394,8 +394,6 @@ Fight.addEvent('wheel',function(event){
      
 });
 
-
-// Stage shake
 
 var k=0;
 function onFrame(event) {

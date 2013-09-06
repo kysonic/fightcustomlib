@@ -107,9 +107,9 @@ function each(data, callback){
 function addEvent(name,callback) {
     switch(name) {
         case 'wheel':
-            //addHandler(window, 'DOMMouseScroll', wheel(1),callbacks);
+            addHandler(window, 'DOMMouseScroll', callback);
             addHandler(window, 'mousewheel', callback);
-            //addHandler(document, 'mousewheel', wheel,callbacks); 
+            addHandler(document, 'mousewheel', callback); 
                 break;
         
     }
