@@ -98,13 +98,70 @@ function each(data, callback){
   }
 }
 
+/*
+ * 
+ * @function addEvent
+ * @description add the Fight prepend event's
+ */
+
+function addEvent(name,callback) {
+    switch(name) {
+        case 'wheel':
+            addHandler(window, 'DOMMouseScroll', wheel,callback);
+            addHandler(window, 'mousewheel', wheel);
+            addHandler(document, 'mousewheel', wheel); 
+                break;
+        
+    }
+    
+}
+
+/*
+ * @function addHendler
+ * @description add the Custom Event Handler
+ */
+
+function addHandler(object, event, handler, useCapture) {
+      console.log(useCapture);
+    if (object.addEventListener) {
+        object.addEventListener(event, handler, useCapture ? useCapture : false);
+    } else if (object.attachEvent) {
+        object.attachEvent('on' + event, handler);
+    } else alert("Add handler is not supported");
+}
+
+/*
+ * @function wheel
+ * @description the Mouse Wheel Handler
+ */
+
+function wheel(event,callback) {
+    var delta; // Scroll direct
+    // -1 - down
+    // 1  - up
+    event = event || window.event;
+    // IE and Opera work with a wheelDelta propperty
+    if (event.wheelDelta) {
+        delta = event.wheelDelta / 120;
+        // In Opera
+        if (window.opera) delta = -delta;
+    // Geko
+    } else if (event.detail) {
+        delta = -event.detail / 3;
+    }
+    // Denied the default browser action
+    if (event.preventDefault)  event.preventDefault();
+    console.log(callback);
+    console.log(delta);
+}
 
 return {
     extend:extend,
     isEmpty: isEmpty,
     isArray: isArray,
     include: include,
-    each: each
+    each: each,
+    addEvent: addEvent
 }
 
 }();

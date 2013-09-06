@@ -12,7 +12,7 @@ var Stage = function (height,width,fillColor,partX,partY) {
    this.strokeColor = '#000';
    this.stokeWidth = 2;
    this.scaleOffset = 20;
-   this.rotateCenter = view.center;
+   this.rotateCenter = new Point(20,380);
    this.partX = partX;
    this.partY = partY;
    this.data = new Object;
@@ -278,12 +278,15 @@ var Graph = function(stage,data) {
     this.points = data.points;
     this.rotate = stage.rotate;
     this.pointRad = 3;
-    this.pointStrokeColor = 'red';
-    this.pointFillColor = 'red';
+    this.pointStrokeColor = 'black';
+    this.pointFillColor = 'black';
+    this.storkeColor = 'black';
     
     this.nullPoint = stage.scaleX.endPoint;
     this.deltaX = stage.scaleX.deltaX;
     this.deltaY = stage.scaleY.deltaY;
+
+    var path = new Path();
 
     var points = new Array();
    
@@ -294,7 +297,7 @@ var Graph = function(stage,data) {
             points[i].fillColor = this.pointFillColor;
             points[i].rotate(stage.rotate,stage.rotateCenter);
         }
-
+        this.drawLine();
     }
 
     this.draw = function() {
@@ -302,6 +305,20 @@ var Graph = function(stage,data) {
             points[i].remove();
         }
         this.init();
+    }
+    
+
+    this.drawLine = function() {
+         path.remove();
+         path = new Path();
+         path.selected = true;
+         for (var i=0;i<this.points.length;i++) {
+            path.add(new Point(this.nullPoint.x+this.deltaY*this.points[i].x,this.nullPoint.y-this.deltaX*this.points[i].y)); 
+        }
+        path.strokeColor = this.storkeColor;
+        path.strokeWidth = 5;
+        console.log(path.strokeColor._alpha=0.2);
+        path.rotate(stage.rotate,stage.rotateCenter);
     }
     
 }
@@ -339,6 +356,10 @@ $.getJSON('points.json',function(response) {
     stage.initGraph(response);
     loading.remove();
 });
+
+
+Fight.addEvent('wheel',function(event){console.log(event)});
+
 
 // Stage shake
 /*
