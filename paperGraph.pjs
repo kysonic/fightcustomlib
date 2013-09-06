@@ -242,6 +242,9 @@ var Scale = function(stage,offset) {
                 if(this.tmpStrokeX['stroke'+i]!=undefined) {
                     this.tmpStrokeX['stroke'+i].point = new Point(this.startPoint.x,this.startPoint.y+this.deltaX*i);
                     this.tmpStrokeX['stroke'+i].draw();
+                }else {
+                    this.tmpStrokeX['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x,this.startPoint.y+this.deltaX*i),8,'vertical');
+                    this.tmpStrokeX['stroke'+i].init();
                 }
             }
         }else {
@@ -251,6 +254,9 @@ var Scale = function(stage,offset) {
                if(this.tmpStrokeY['stroke'+i]!=undefined) {
                     this.tmpStrokeY['stroke'+i].point = new Point(this.startPoint.x+this.deltaY*i,this.startPoint.y);
                     this.tmpStrokeY['stroke'+i].draw();
+                }else {
+                    this.tmpStrokeY['stroke'+i]= new App.Stroke(this,new Point(this.startPoint.x+this.deltaY*i,this.startPoint.y),8,'gorizontal');
+                    this.tmpStrokeY['stroke'+i].init();
                 }
             }
         }
@@ -296,16 +302,15 @@ var Graph = function(stage,data) {
     this.pointStrokeColor = 'black';
     this.pointFillColor = 'black';
     this.storkeColor = 'black';
-    
-    this.nullPoint = stage.scaleX.endPoint;
-    this.deltaX = stage.scaleX.deltaX;
-    this.deltaY = stage.scaleY.deltaY;
 
     var path = new Path();
 
     var points = new Array();
    
     this.init = function() {
+            this.nullPoint = stage.scaleX.endPoint;
+    this.deltaX = stage.scaleX.deltaX;
+    this.deltaY = stage.scaleY.deltaY;
         for (var i=0;i<this.points.length;i++) {
             points[i] = new Path.Circle(new Point(this.nullPoint.x+this.deltaY*this.points[i].x,this.nullPoint.y-this.deltaX*this.points[i].y),this.pointRad);
             points[i].strokeColor = this.pointStrokeColor;
@@ -339,8 +344,6 @@ var Graph = function(stage,data) {
 }
 
 // ### Graph Object ###
-
-Fight.extend(Stage,Path.Rectangle);
 
 
 // Return section
@@ -377,12 +380,17 @@ $.getJSON('points.json',function(response) {
 Fight.addEvent('wheel',function(event){
      var delta = Fight.getWheelDelta(event);
      if(delta=='1') {
-        stage.partX++;
-        stage.partY++;
+       if((stage.partX+1)<30 && (stage.partY+1)<30) {
+            stage.partX++;
+            stage.partY++;
+       }
+
      }else {
+     if((stage.partX-1)>0 && (stage.partY-1)>0) {
         stage.partX--;
         stage.partY--;
      }
+}
      
 });
 
