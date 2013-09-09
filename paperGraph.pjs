@@ -341,7 +341,7 @@ var Graph = function(stage,data) {
              if(i!=0 && i!=(this.points.length-1) && (i % 2==0)) {
                 var segment = path.segments[i];  
                 var sinus = Math.sin(1 * event.time + i);
-                segment.point.y = sinus * 60 + this.nullPoint.y;
+                segment.point.y = sinus * 60 + this.nullPoint.y-this.deltaX*this.points[i].y;
                 }
             }   
 
