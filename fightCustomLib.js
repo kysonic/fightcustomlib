@@ -163,47 +163,62 @@ function getWheelDelta(event) {
     function parseNum(number) {
         return parseInt(number.replace(/\D+/g, ""));
     }
-/*
- *  function parseNum
- * description This function parse number of type
- * validateRules notEmpty, numeric, string, customRegExp
- * 
- */
+ /*
+     * function fTest
+     * description JS Test analog
+     */
+    function fTest(validate,regex){
+        return !isEmpty(validate.match(regex));
+    }
+    /*
+     * function parseNum
+     * description This function parse number of type
+     * validateRules notEmpty, numeric, string, customRegExp
+     * 
+     */
 
     function validate(validate, validateRules) {
         var isValid = true;
+        var validate = validate.toString();
+        //console.log(validate);
         each(validateRules, function(key, value) {
             switch (value) {
                 case 'notEmpty':
-                    isValid = !isEmpty(validate);
+                    if (isValid)
+                        isValid = !isEmpty(validate);
                     break;
                 case 'numeric':
-                    isValid = validate.test(new RegExp('\D+', 'ig'));
+                    if (isValid)
+                       isValid = fTest(validate,/\d+/i);
                     break;
                 case 'string':
-                    isValid = validate.test(new RegExp('\W+', 'ig'));
+                    if (isValid)
+                        isValid = fTest(validate,/\W+/i);
                     break;
                 default:
                     // RegExp
-                    isValid = validate.test(value);
+                    if (isValid)
+                        isValid = validate.test(value);
                     break;
             }
-            
-           
+
         });
-         return isValid;
+        
+        return isValid;
     }
-return {
-    extend:extend,
-    isEmpty: isEmpty,
-    isArray: isArray,
-    include: include,
-    each: each,
-    addEvent: addEvent,
-    parseNum: parseNum,
-    getWheelDelta: getWheelDelta,
-    validate:validate
-}
+
+    return {
+        extend: extend,
+        isEmpty: isEmpty,
+        isArray: isArray,
+        include: include,
+        each: each,
+        addEvent: addEvent,
+        parseNum: parseNum,
+        getWheelDelta: getWheelDelta,
+        validate: validate
+    }
+
 
 }();
 
