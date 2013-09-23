@@ -163,7 +163,36 @@ function getWheelDelta(event) {
     function parseNum(number) {
         return parseInt(number.replace(/\D+/g, ""));
     }
+/*
+ *  function parseNum
+ * description This function parse number of type
+ * validateRules notEmpty, numeric, string, customRegExp
+ * 
+ */
 
+    function validate(validate, validateRules) {
+        var isValid = true;
+        each(validateRules, function(key, value) {
+            switch (value) {
+                case 'notEmpty':
+                    isValid = !isEmpty(validate);
+                    break;
+                case 'numeric':
+                    isValid = validate.test(new RegExp('\D+', 'ig'));
+                    break;
+                case 'string':
+                    isValid = validate.test(new RegExp('\W+', 'ig'));
+                    break;
+                default:
+                    // RegExp
+                    isValid = validate.test(value);
+                    break;
+            }
+            
+           
+        });
+         return isValid;
+    }
 return {
     extend:extend,
     isEmpty: isEmpty,
@@ -172,7 +201,8 @@ return {
     each: each,
     addEvent: addEvent,
     parseNum: parseNum,
-    getWheelDelta: getWheelDelta
+    getWheelDelta: getWheelDelta,
+    validate:validate
 }
 
 }();
