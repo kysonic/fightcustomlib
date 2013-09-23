@@ -154,6 +154,15 @@ function getWheelDelta(event) {
     return delta;
 }
 
+  /*
+     * function parseNum
+     * description This function parse number of type
+     * 
+     */
+    function parseNum(number) {
+        return parseInt(number.replace(/\D+/g, ""));
+    }
+
 return {
     extend:extend,
     isEmpty: isEmpty,
@@ -161,6 +170,7 @@ return {
     include: include,
     each: each,
     addEvent: addEvent,
+    parseNum: parseNum,
     getWheelDelta: getWheelDelta
 }
 
