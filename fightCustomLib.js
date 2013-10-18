@@ -207,7 +207,12 @@ function getWheelDelta(event) {
         return isValid;
     }
 
-function getBaseUrl() {
+/*
+ * function getBaseUrl
+ * description Return site base url
+ * depth int 1 or 2 - 1 if domain name is unary, 2 - binary .... 
+ */
+function getBaseUrl(depth) {
     try {
         var url = location.href;
 
@@ -216,8 +221,8 @@ function getBaseUrl() {
             start = 0 
         else 
             start = start + 2;
-
-        var end = url.indexOf('/', start);
+        
+        var end = url.indexOf('/', start+start*depth);
         if (end < 0) end = url.length - start;
 
         var baseURL = url.substring(start, end);
