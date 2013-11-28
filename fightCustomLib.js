@@ -232,9 +232,19 @@ function getBaseUrl(depth) {
         return null;
     }
 }
+
+function isFunc(object) {
+	return !!(object && object.constructor && object.call && object.apply);
+}
+
+function isObj(object) {
+	return Object.prototype.toString.call(null) === '[object Object]';
+}
     return {
         extend: extend,
         isEmpty: isEmpty,
+        isFunc: isFunc,
+        isObj: isObj,
         isArray: isArray,
         include: include,
         each: each,
