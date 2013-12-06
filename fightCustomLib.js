@@ -238,8 +238,43 @@ function isFunc(object) {
 }
 
 function isObj(object) {
-	return Object.prototype.toString.call(null) === '[object Object]';
+	 var objectTypes = {
+            'boolean': false,
+            'function': true,
+            'object': true,
+            'number': false,
+            'string': false,
+            'undefined': false
+        };
+        // check if the value is the ECMAScript language type of Object
+        // http://es5.github.io/#x8
+        // and avoid a V8 bug
+        // http://code.google.com/p/v8/issues/detail?id=2291
+        return !!(value && objectTypes[typeof value]);
 }
+
+// placer is object to parse
+function tplMaster (html, placer) {
+        var
+          tpl = html;
+        for (key in placer) {
+            if (placer.hasOwnProperty(key)) {
+                if (helper.isObj(placer[key])) {
+                    for (subkey in placer[key]) {
+                        if (placer[key].hasOwnProperty(subkey)) {
+                            debugger;
+                            var reg = new RegExp('{{ ' + key + '.' + subkey + ' }}', 'ig');
+                            tpl = tpl.replace(reg, placer[key][subkey]);
+                        }
+                    }
+                }
+                var reg = new RegExp('{{ ' + key + ' }}', 'ig');
+                tpl = tpl.replace(reg, placer[key]);
+            }
+        }
+        return tpl;
+    };
+	
     return {
         extend: extend,
         isEmpty: isEmpty,
