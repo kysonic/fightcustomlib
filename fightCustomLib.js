@@ -262,7 +262,6 @@ function tplMaster (html, placer) {
                 if (helper.isObj(placer[key])) {
                     for (subkey in placer[key]) {
                         if (placer[key].hasOwnProperty(subkey)) {
-                            debugger;
                             var reg = new RegExp('{{ ' + key + '.' + subkey + ' }}', 'ig');
                             tpl = tpl.replace(reg, placer[key][subkey]);
                         }
